@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G-Studio Workspace Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'BIZ UDPGothic', sans-serif;
+            background-color: #F8FAFC;
+            background-image: radial-gradient(at 50% 0%, rgba(219, 234, 254, 0.45) 0px, transparent 60%);
+            color: #0F172A;
+            -webkit-font-smoothing: antialiased;
+        }
+        .ms-icon {
+            font-family: 'Material Symbols Rounded';
+            font-weight: normal;
+            font-style: normal;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            user-select: none;
+            flex-shrink: 0;
+            font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        }
+        .google-bar {
+            background: linear-gradient(90deg, #4285F4 0%, #4285F4 25%, #EA4335 25%, #EA4335 50%, #FBBC05 50%, #FBBC05 75%, #34A853 75%, #34A853 100%);
+            height: 4px;
+        }
+        .studio-card {
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid #E2E8F0;
+        }
+        .studio-card:hover {
+            transform: translateY(-4px);
+            border-color: #93C5FD;
+            box-shadow: 0 20px 32px -10px rgba(15, 23, 42, 0.08), 0 8px 16px -6px rgba(37, 99, 235, 0.06);
+        }
+        .studio-card:hover .launch-pill {
+            background-color: #0F172A;
+            color: #FFFFFF;
+            border-color: #0F172A;
+        }
+        .studio-card:hover .launch-arrow {
+            transform: translate(2px, -2px);
+        }
+        .launch-arrow {
+            transition: transform 0.2s ease;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col select-none">
+
+    <!-- Top Google 4-Color Bar -->
+    <div class="google-bar sticky top-0 z-50"></div>
+
+    <!-- CLEAN MINIMAL HEADER -->
+    <header class="bg-white/85 backdrop-blur-md border-b border-slate-200/80 h-16 px-6 flex items-center justify-between gap-4 sticky top-[4px] z-40">
+        <div class="max-w-7xl w-full mx-auto flex items-center justify-between gap-4">
+            <!-- Left: Brand Identity -->
+            <div class="flex items-center gap-3 shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-xs">
+                    <span class="ms-icon text-[20px]">grid_view</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-slate-900">
+                            <span class="text-[#4285F4]">G</span><span class="text-[#EA4335]">-</span><span class="text-[#FBBC05]">S</span><span class="text-[#4285F4]">t</span><span class="text-[#34A853]">u</span><span class="text-[#EA4335]">d</span><span class="text-[#4285F4]">i</span><span class="text-[#34A853]">o</span>
+                            <span class="text-slate-900 ml-1">Workspace</span>
+                        </h1>
+                        <span id="headerToolsCountBadge" class="hidden sm:inline-flex items-center px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-md">
+                            -- Tools
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Clean Category Filter Tabs -->
+            <nav class="hidden md:flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 text-xs font-bold">
+                <button data-cat="all" class="cat-pill px-4 py-1.5 rounded-lg bg-white text-slate-900 shadow-2xs transition cursor-pointer">
+                    すべて
+                </button>
+                <button data-cat="slide" class="cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">
+                    スライド・図解・動画
+                </button>
+                <button data-cat="diagram" class="cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">
+                    3D構成・業務フロー
+                </button>
+                <button data-cat="doc_data" class="cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">
+                    AIマニュアル・PDF・分析
+                </button>
+            </nav>
+
+            <!-- Right: Quick Hint & Sync Status -->
+            <div class="hidden xl:flex items-center gap-3 text-xs font-medium text-slate-500">
+                <div id="syncStatusBadge" class="flex items-center gap-1 text-[11px] text-slate-400">
+                    <span class="ms-icon text-[14px] animate-spin">sync</span>
+                    <span>台帳同期中...</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="ms-icon text-blue-600 text-[16px]">ads_click</span>
+                    <span>カードをクリックして直接起動</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE GALLERY -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-7 flex flex-col justify-center">
+
+        <!-- Minimal Section Title -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                    クリエイティブ＆業務効率化スタジオ
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                    使いたいツールのカードをクリックすると、新しいタブでスタジオが起動します。
+                </p>
+            </div>
+            <!-- Mobile Category Pills -->
+            <div class="flex md:hidden items-center gap-1 overflow-x-auto pb-1 text-xs font-bold">
+                <button data-cat="all" class="cat-pill px-3 py-1.5 rounded-lg bg-slate-900 text-white shrink-0">すべて</button>
+                <button data-cat="slide" class="cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0">スライド・図解</button>
+                <button data-cat="diagram" class="cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0">設計・フロー</button>
+                <button data-cat="doc_data" class="cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0">マニュアル・文書・分析</button>
+            </div>
+        </div>
+
+        <!-- 4xN CLEAN BENTO CARDS GRID -->
+        <div id="toolsGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Populated by JS -->
+        </div>
+
+    </main>
+
+    <!-- MINIMAL FOOTER -->
+    <footer class="border-t border-slate-200/80 bg-white/60 py-3.5 px-6 text-xs text-slate-400 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>G-Studio Workspace Hub — Designed with Google Material Design 3</span>
+            <span id="footerToolsCountText" class="font-mono text-[11px]">Specialized Web Studios</span>
+        </div>
+    </footer>
+
+    <!-- TOOL DETAIL & USAGE GUIDE MODAL -->
+    <div id="toolGuideModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+        <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+                <div class="flex items-center gap-3.5">
+                    <div id="modalToolIconBox" class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-xs">
+                        <span id="modalToolIcon" class="ms-icon text-[26px]">apps</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="modalToolCategory" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white border border-slate-200 text-slate-700">カテゴリ</span>
+                            <span id="modalToolVersion" class="text-[11px] font-mono font-bold text-slate-400">Studio</span>
+                        </div>
+                        <h3 id="modalToolTitle" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">ツール名</h3>
+                    </div>
+                </div>
+                <button id="closeGuideModalBtn" class="p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition cursor-pointer">
+                    <span class="ms-icon text-[20px]">close</span>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5 overflow-y-auto">
+                <p id="modalToolOverview" class="text-xs sm:text-sm text-slate-600 leading-relaxed"></p>
+
+                <div class="space-y-2.5">
+                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="ms-icon text-blue-600 text-[16px]">auto_awesome</span>
+                        <span>主な機能と特徴</span>
+                    </h4>
+                    <div id="modalFeaturesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                </div>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2">
+                    <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <span class="ms-icon text-amber-500 text-[16px]">lightbulb</span>
+                        <span>こんな業務シーンにおすすめ</span>
+                    </h4>
+                    <ul id="modalUseCasesList" class="space-y-1.5 text-xs text-slate-600 list-disc list-inside"></ul>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+                <button id="modalCloseBottomBtn" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition cursor-pointer">
+                    閉じる
+                </button>
+                <a id="modalLaunchBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-blue-600 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                    <span>このスタジオを起動する</span>
+                    <span class="ms-icon text-[16px]">arrow_outward</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*************************************************************************
+         * 1. GAS デプロイURL ＆ ベースURL解決エンジン
+         *************************************************************************/
+        const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwLodPz8_jWDmiY_DKhhrqg6i-b1MmirFBYygpwloTvpRnH675lT7nNNoInINDq7wll/exec';
+
+        const SITE_BASE_URL = 'https://kotakahashi-4u.github.io/g-studio/';
+
+        function resolveToolUrl(subPath) {
+            const raw = String(subPath || '').trim();
+            if (!raw) return '#';
+            // 直リンク（http:// または https://）の場合はそのまま返す
+            if (/^https?:\/\//i.test(raw)) return raw;
+
+            // 相対パスの場合は SITE_BASE_URL 配下のURLとして結合する
+            const cleanBase = SITE_BASE_URL.replace(/\/+$/, '');
+            const cleanSub = raw.replace(/^\.?\//, '');
+            return `${cleanBase}/${cleanSub}`;
+        }
+
+        /*************************************************************************
+         * 2. 日本語アイコン名 ➔ Material Symbols 自動変換エンジン
+         * スプレッドシートのプルダウン（日本語）や英語コードのどちらでも自動判別します
+         *************************************************************************/
+        const ICON_JP_MAP = {
+            'マニュアル・本': 'menu_book',
+            '図解・ハブ': 'hub',
+            '画面注釈・スクショ': 'screenshot_monitor',
+            'アイコン・図形': 'interests',
+            '業務フロー・分岐': 'account_tree',
+            '3D・立体構成': 'view_in_ar',
+            'アニメーション・軌道': 'animation',
+            'データ分析・グラフ': 'insights',
+            'AI・キラキラ': 'auto_awesome',
+            'AIロボット・ボット': 'smart_toy',
+            '脳・AI推論': 'psychology',
+            'スライド・プレゼン': 'co_present',
+            '動画・ムービー': 'movie',
+            '音声・マイク': 'record_voice_over',
+            '画像・写真編集': 'image',
+            'パレット・デザイン': 'palette',
+            'PDF・文書ファイル': 'description',
+            '表計算・シート': 'table_chart',
+            'フォーム・アンケート': 'assignment',
+            'チェック・承認タスク': 'task_alt',
+            'ダッシュボード・統計': 'dashboard',
+            '棒グラフ・集計': 'bar_chart',
+            'タイムライン・工程表': 'timeline',
+            'カレンダー・日程': 'calendar_month',
+            'クラウド・サーバー': 'cloud',
+            'データベース・蓄積': 'database',
+            'セキュリティ・鍵': 'shield_lock',
+            'コード・開発': 'terminal',
+            '連携・APIプラグ': 'extension',
+            '検索・リサーチ': 'manage_search',
+            'チャット・相談': 'forum',
+            'メール・通知': 'forward_to_inbox',
+            'フォルダ・資料箱': 'folder_open',
+            '設定・歯車ツール': 'build_circle',
+            'ロケット・高速化': 'rocket_launch',
+            '電球・アイデア': 'lightbulb',
+            'マップ・位置情報': 'map',
+            'アプリ・汎用': 'apps'
+        };
+
+        function resolveMaterialIconCode(rawInput) {
+            const val = String(rawInput || '').trim();
+            if (!val) return 'apps';
+
+            // 1. すでに半角英数字＋アンダースコアのMaterialアイコンコードならそのまま返す
+            if (/^[a-z0-9_]+$/.test(val)) {
+                return val;
+            }
+
+            // 2. カッコ内に英字コードが含まれる形式（例: "マニュアル・本 (menu_book)"）にも対応
+            const parenMatch = val.match(/\(([a-z0-9_]+)\)/i);
+            if (parenMatch) {
+                return parenMatch[1].toLowerCase();
+            }
+
+            // 3. 完全一致マップ検索
+            if (ICON_JP_MAP[val]) {
+                return ICON_JP_MAP[val];
+            }
+
+            // 4. ゆらぎ・部分一致キーワード判定（手入力でも自動で最適アイコンに変換）
+            if (val.includes('マニュアル') || val.includes('本') || val.includes('ブック')) return 'menu_book';
+            if (val.includes('図解') || val.includes('ハブ') || val.includes('スマートアート')) return 'hub';
+            if (val.includes('注釈') || val.includes('スクショ') || val.includes('画面') || val.includes('黒塗')) return 'screenshot_monitor';
+            if (val.includes('アイコン') || val.includes('図形') || val.includes('素材')) return 'interests';
+            if (val.includes('フロー') || val.includes('分岐') || val.includes('ツリー') || val.includes('BPMN')) return 'account_tree';
+            if (val.includes('3D') || val.includes('３Ｄ') || val.includes('立体') || val.includes('構成')) return 'view_in_ar';
+            if (val.includes('アニメ') || val.includes('軌道') || val.includes('モーション')) return 'animation';
+            if (val.includes('分析') || val.includes('インサイト') || val.includes('統計')) return 'insights';
+            if (val.includes('AI') || val.includes('生成') || val.includes('キラキラ')) return 'auto_awesome';
+            if (val.includes('ロボ') || val.includes('ボット') || val.includes('エージェント')) return 'smart_toy';
+            if (val.includes('スライド') || val.includes('プレゼン')) return 'co_present';
+            if (val.includes('動画') || val.includes('ムービー') || val.includes('映像')) return 'movie';
+            if (val.includes('音声') || val.includes('ナレーション') || val.includes('マイク')) return 'record_voice_over';
+            if (val.includes('画像') || val.includes('写真')) return 'image';
+            if (val.includes('PDF') || val.includes('文書') || val.includes('書類')) return 'description';
+            if (val.includes('表') || val.includes('シート') || val.includes('CSV')) return 'table_chart';
+            if (val.includes('グラフ') || val.includes('チャート')) return 'bar_chart';
+            if (val.includes('セキュリティ') || val.includes('保護') || val.includes('鍵')) return 'shield_lock';
+            if (val.includes('クラウド')) return 'cloud';
+            if (val.includes('データ') || val.includes('DB')) return 'database';
+            if (val.includes('チャット') || val.includes('会話')) return 'forum';
+            if (val.includes('検索')) return 'manage_search';
+
+            return 'apps';
+        }
+
+        // カテゴリ（filterCat）も日本語入力と英語コードの両方に対応
+        function resolveCategoryCode(rawCat) {
+            const val = String(rawCat || '').trim();
+            if (val === 'slide' || val === 'diagram' || val === 'doc_data') return val;
+            if (val.includes('スライド') || val.includes('図解') || val.includes('動画')) return 'slide';
+            if (val.includes('3D') || val.includes('構成') || val.includes('フロー') || val.includes('設計')) return 'diagram';
+            if (val.includes('マニュアル') || val.includes('PDF') || val.includes('分析') || val.includes('文書')) return 'doc_data';
+            return 'all';
+        }
+
+        /*************************************************************************
+         * 3. 状態管理 ＆ スプレッドシート(GAS doGet)取得コントローラー
+         *************************************************************************/
+        let toolsCatalog = [];
+        let currentCatFilter = 'all';
+
+        function normalizeToolItem(t) {
+            return {
+                ...t,
+                filterCat: resolveCategoryCode(t.filterCat),
+                iconCode: resolveMaterialIconCode(t.icon),
+                resolvedUrl: resolveToolUrl(t.url)
+            };
+        }
+
+        function renderLoadingSkeletons() {
+            const container = document.getElementById('toolsGridContainer');
+            container.innerHTML = Array.from({ length: 8 }).map(() => `
+                <div class="bg-white rounded-3xl p-5 border border-slate-200/80 h-60 flex flex-col justify-between animate-pulse">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-100"></div>
+                            <div class="w-20 h-6 rounded-full bg-slate-100"></div>
+                        </div>
+                        <div class="w-28 h-3 bg-slate-100 rounded mb-2"></div>
+                        <div class="w-48 h-5 bg-slate-200 rounded mb-3"></div>
+                        <div class="w-full h-3 bg-slate-100 rounded mb-1.5"></div>
+                        <div class="w-4/5 h-3 bg-slate-100 rounded"></div>
+                    </div>
+                    <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between">
+                        <div class="w-24 h-3 bg-slate-100 rounded"></div>
+                        <div class="w-20 h-7 bg-slate-100 rounded-full"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderErrorState(message) {
+            const container = document.getElementById('toolsGridContainer');
+            container.innerHTML = `
+                <div class="col-span-full bg-white rounded-3xl p-8 border border-slate-200 text-center space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+                        <span class="ms-icon text-[26px]">cloud_off</span>
+                    </div>
+                    <div class="text-sm font-bold text-slate-800">スプレッドシート台帳データの取得に失敗しました</div>
+                    <p class="text-xs text-slate-500">${message}</p>
+                    <button type="button" onclick="loadToolsFromGas()" class="mt-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5">
+                        <span class="ms-icon text-[16px]">refresh</span>
+                        <span>再読み込み</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        function updateToolCountLabels(count) {
+            const headerBadge = document.getElementById('headerToolsCountBadge');
+            const footerText = document.getElementById('footerToolsCountText');
+            if (headerBadge) headerBadge.textContent = `${count} Tools`;
+            if (footerText) footerText.textContent = `${count} Specialized Web Studios`;
+        }
+
+        function updateSyncStatus(state, text) {
+            const badge = document.getElementById('syncStatusBadge');
+            if (!badge) return;
+            if (state === 'loading') {
+                badge.innerHTML = `<span class="ms-icon text-[14px] animate-spin">sync</span><span>${text}</span>`;
+            } else if (state === 'synced') {
+                badge.innerHTML = `<span class="ms-icon text-emerald-600 text-[14px]">cloud_done</span><span class="text-slate-500">${text}</span>`;
+            } else if (state === 'error') {
+                badge.innerHTML = `<span class="ms-icon text-rose-500 text-[14px]">error</span><span class="text-rose-500">${text}</span>`;
+            }
+        }
+
+        async function loadToolsFromGas() {
+            renderLoadingSkeletons();
+            updateSyncStatus('loading', '台帳同期中...');
+
+            try {
+                const res = await fetch(GAS_API_URL, { method: 'GET', redirect: 'follow' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const json = await res.json();
+
+                if (json && json.status === 'success' && Array.isArray(json.data)) {
+                    toolsCatalog = json.data.map(normalizeToolItem);
+                    updateToolCountLabels(toolsCatalog.length);
+                    updateSyncStatus('synced', 'シート同期済');
+                    renderToolsGrid();
+                } else {
+                    throw new Error(json.message || '有効なデータが見つかりません');
+                }
+            } catch (err) {
+                console.error('GASからの取得に失敗しました:', err);
+                updateToolCountLabels(0);
+                updateSyncStatus('error', '同期エラー');
+                renderErrorState('ネットワーク接続またはGASの公開設定（アクセスできるユーザー：全員）をご確認ください。');
+            }
+        }
+
+        /*************************************************************************
+         * 4. UI RENDERING & INTERACTION CONTROLLERS
+         *************************************************************************/
+        function renderToolsGrid() {
+            const container = document.getElementById('toolsGridContainer');
+            const filtered = toolsCatalog.filter(t => currentCatFilter === 'all' || t.filterCat === currentCatFilter);
+
+            container.innerHTML = filtered.map((t) => `
+                <a href="${t.resolvedUrl}" target="_blank" rel="noopener noreferrer" class="studio-card group bg-white rounded-3xl p-5 flex flex-col justify-between gap-4 relative overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <!-- Top Row: Soft Duotone Icon + Category Pill + Info Button -->
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105" style="background:${t.softBg}; color:${t.accentColor}">
+                                <span class="ms-icon text-[26px]">${t.iconCode}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[11px] font-bold px-2.5 py-1 rounded-full" style="background:${t.softBg}; color:${t.accentColor}">
+                                    ${t.badge}
+                                </span>
+                                <button type="button" data-guide-id="${t.id}" class="guide-open-btn w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center transition cursor-pointer" title="詳しい機能ガイドを見る">
+                                    <span class="ms-icon text-[17px]">info</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Middle Row: Full-Width Japanese Main Title + English Studio Name -->
+                        <div class="space-y-1">
+                            <div class="text-[11px] font-bold tracking-wide text-slate-400">${t.studioName}</div>
+                            <h3 class="text-base sm:text-[17px] font-extrabold text-slate-900 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
+                                ${t.mainTitle}
+                            </h3>
+                        </div>
+
+                        <!-- Concise 2-Line Description -->
+                        <p class="text-xs text-slate-500 leading-relaxed mt-2.5 line-clamp-2">
+                            ${t.shortDesc}
+                        </p>
+                    </div>
+
+                    <!-- Bottom Row: Output Format Hint + Unified Launch Pill -->
+                    <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-semibold text-slate-400 truncate">
+                            出力: ${t.outputFormat}
+                        </span>
+                        <span class="launch-pill px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-800 border border-slate-200/80 text-xs font-bold inline-flex items-center gap-1 transition shrink-0">
+                            <span>起動する</span>
+                            <span class="ms-icon text-[15px] launch-arrow">arrow_outward</span>
+                        </span>
+                    </div>
+                </a>
+            `).join('');
+
+            // Bind Info Modal buttons
+            container.querySelectorAll('.guide-open-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openToolGuideModal(btn.getAttribute('data-guide-id'));
+                });
+            });
+        }
+
+        function openToolGuideModal(toolId) {
+            const tool = toolsCatalog.find(t => t.id === toolId);
+            if (!tool) return;
+
+            const modal = document.getElementById('toolGuideModal');
+            const iconBox = document.getElementById('modalToolIconBox');
+            iconBox.style.backgroundColor = tool.softBg;
+            iconBox.style.color = tool.accentColor;
+            document.getElementById('modalToolIcon').textContent = tool.iconCode;
+            document.getElementById('modalToolCategory').textContent = tool.category;
+            document.getElementById('modalToolVersion').textContent = tool.studioName;
+            document.getElementById('modalToolTitle').textContent = tool.mainTitle;
+            document.getElementById('modalToolOverview').textContent = tool.overview;
+
+            document.getElementById('modalFeaturesGrid').innerHTML = (tool.features || []).map(f => `
+                <div class="p-3.5 rounded-2xl border border-slate-200/90 bg-white space-y-1">
+                    <div class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full shrink-0" style="background:${tool.accentColor}"></span>
+                        <span>${f.title}</span>
+                    </div>
+                    <p class="text-[11.5px] text-slate-500 leading-relaxed pl-3.5">${f.desc}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('modalUseCasesList').innerHTML = (tool.useCases || []).map(u => `<li>${u}</li>`).join('');
+
+            const launchBtn = document.getElementById('modalLaunchBtn');
+            launchBtn.href = tool.resolvedUrl;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeToolGuideModal() {
+            const modal = document.getElementById('toolGuideModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function initEvents() {
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentCatFilter = btn.getAttribute('data-cat') || 'all';
+                    document.querySelectorAll('.cat-pill').forEach(b => {
+                        const isActive = (b.getAttribute('data-cat') === currentCatFilter);
+                        if (b.parentElement.tagName === 'NAV') {
+                            b.className = isActive
+                                ? 'cat-pill px-4 py-1.5 rounded-lg bg-white text-slate-900 shadow-2xs transition cursor-pointer'
+                                : 'cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer';
+                        } else {
+                            b.className = isActive
+                                ? 'cat-pill px-3 py-1.5 rounded-lg bg-slate-900 text-white shrink-0'
+                                : 'cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0';
+                        }
+                    });
+                    renderToolsGrid();
+                });
+            });
+
+            document.getElementById('closeGuideModalBtn').addEventListener('click', closeToolGuideModal);
+            document.getElementById('modalCloseBottomBtn').addEventListener('click', closeToolGuideModal);
+            document.getElementById('toolGuideModal').addEventListener('click', e => {
+                if (e.target.id === 'toolGuideModal') closeToolGuideModal();
+            });
+
+            window.addEventListener('keydown', e => {
+                if (e.key === 'Escape') closeToolGuideModal();
+            });
+        }
+
+        window.onload = () => {
+            initEvents();
+            loadToolsFromGas();
+        };
+    </script>
+</body>
+</html>

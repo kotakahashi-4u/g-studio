@@ -84,29 +84,13 @@
                 </div>
             </div>
 
-            <!-- Center: Clean Category Filter Tabs -->
-            <nav class="hidden md:flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 text-xs font-bold">
-                <button data-cat="all" class="cat-pill px-4 py-1.5 rounded-lg bg-white text-slate-900 shadow-2xs transition cursor-pointer">
-                    すべて
-                </button>
-                <button data-cat="slide" class="cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">
-                    スライド・図解・動画
-                </button>
-                <button data-cat="diagram" class="cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">
-                    3D構成・業務フロー
-                </button>
-                <button data-cat="doc_data" class="cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">
-                    AIマニュアル・PDF・分析
-                </button>
-            </nav>
-
             <!-- Right: Quick Hint & Sync Status -->
-            <div class="hidden xl:flex items-center gap-3 text-xs font-medium text-slate-500">
+            <div class="hidden sm:flex items-center gap-3 text-xs font-medium text-slate-500">
                 <div id="syncStatusBadge" class="flex items-center gap-1 text-[11px] text-slate-400">
                     <span class="ms-icon text-[14px] animate-spin">sync</span>
                     <span>台帳同期中...</span>
                 </div>
-                <div class="flex items-center gap-1.5">
+                <div class="hidden md:flex items-center gap-1.5">
                     <span class="ms-icon text-blue-600 text-[16px]">ads_click</span>
                     <span>カードをクリックして直接起動</span>
                 </div>
@@ -115,25 +99,16 @@
     </header>
 
     <!-- MAIN WORKSPACE GALLERY -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-7 flex flex-col justify-center">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-6 pt-6 pb-10 flex flex-col justify-start">
 
         <!-- Minimal Section Title -->
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
-            <div>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-                    クリエイティブ＆業務効率化スタジオ
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                    使いたいツールのカードをクリックすると、新しいタブでスタジオが起動します。
-                </p>
-            </div>
-            <!-- Mobile Category Pills -->
-            <div class="flex md:hidden items-center gap-1 overflow-x-auto pb-1 text-xs font-bold">
-                <button data-cat="all" class="cat-pill px-3 py-1.5 rounded-lg bg-slate-900 text-white shrink-0">すべて</button>
-                <button data-cat="slide" class="cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0">スライド・図解</button>
-                <button data-cat="diagram" class="cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0">設計・フロー</button>
-                <button data-cat="doc_data" class="cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0">マニュアル・文書・分析</button>
-            </div>
+        <div class="mb-5">
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                クリエイティブ＆業務効率化スタジオ
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                使いたいツールのカードをクリックすると、新しいタブでスタジオが起動します。
+            </p>
         </div>
 
         <!-- 4xN CLEAN BENTO CARDS GRID -->
@@ -226,7 +201,6 @@
 
         /*************************************************************************
          * 2. 日本語アイコン名 ➔ Material Symbols 自動変換エンジン
-         * スプレッドシートのプルダウン（日本語）や英語コードのどちらでも自動判別します
          *************************************************************************/
         const ICON_JP_MAP = {
             'マニュアル・本': 'menu_book',
@@ -316,26 +290,14 @@
             return 'apps';
         }
 
-        // カテゴリ（filterCat）も日本語入力と英語コードの両方に対応
-        function resolveCategoryCode(rawCat) {
-            const val = String(rawCat || '').trim();
-            if (val === 'slide' || val === 'diagram' || val === 'doc_data') return val;
-            if (val.includes('スライド') || val.includes('図解') || val.includes('動画')) return 'slide';
-            if (val.includes('3D') || val.includes('構成') || val.includes('フロー') || val.includes('設計')) return 'diagram';
-            if (val.includes('マニュアル') || val.includes('PDF') || val.includes('分析') || val.includes('文書')) return 'doc_data';
-            return 'all';
-        }
-
         /*************************************************************************
          * 3. 状態管理 ＆ スプレッドシート(GAS doGet)取得コントローラー
          *************************************************************************/
         let toolsCatalog = [];
-        let currentCatFilter = 'all';
 
         function normalizeToolItem(t) {
             return {
                 ...t,
-                filterCat: resolveCategoryCode(t.filterCat),
                 iconCode: resolveMaterialIconCode(t.icon),
                 resolvedUrl: resolveToolUrl(t.url)
             };
@@ -429,9 +391,8 @@
          *************************************************************************/
         function renderToolsGrid() {
             const container = document.getElementById('toolsGridContainer');
-            const filtered = toolsCatalog.filter(t => currentCatFilter === 'all' || t.filterCat === currentCatFilter);
 
-            container.innerHTML = filtered.map((t) => `
+            container.innerHTML = toolsCatalog.map((t) => `
                 <a href="${t.resolvedUrl}" target="_blank" rel="noopener noreferrer" class="studio-card group bg-white rounded-3xl p-5 flex flex-col justify-between gap-4 relative overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <!-- Top Row: Soft Duotone Icon + Category Pill + Info Button -->
                     <div>
@@ -526,25 +487,6 @@
         }
 
         function initEvents() {
-            document.querySelectorAll('.cat-pill').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    currentCatFilter = btn.getAttribute('data-cat') || 'all';
-                    document.querySelectorAll('.cat-pill').forEach(b => {
-                        const isActive = (b.getAttribute('data-cat') === currentCatFilter);
-                        if (b.parentElement.tagName === 'NAV') {
-                            b.className = isActive
-                                ? 'cat-pill px-4 py-1.5 rounded-lg bg-white text-slate-900 shadow-2xs transition cursor-pointer'
-                                : 'cat-pill px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer';
-                        } else {
-                            b.className = isActive
-                                ? 'cat-pill px-3 py-1.5 rounded-lg bg-slate-900 text-white shrink-0'
-                                : 'cat-pill px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 shrink-0';
-                        }
-                    });
-                    renderToolsGrid();
-                });
-            });
-
             document.getElementById('closeGuideModalBtn').addEventListener('click', closeToolGuideModal);
             document.getElementById('modalCloseBottomBtn').addEventListener('click', closeToolGuideModal);
             document.getElementById('toolGuideModal').addEventListener('click', e => {
